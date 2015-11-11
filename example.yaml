@@ -1,0 +1,18 @@
+prefix: 'sm'
+
+state_machine_members: !!pairs
+    - uint32_t: val
+
+states:
+    - start:
+        transitions:
+            - off: true
+    - on:
+        transitions:
+            - off: true
+            - rx: true
+            - tx: true
+    - off:
+        transitions:
+            - on: true
+            - sleep: true
