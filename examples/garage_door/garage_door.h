@@ -84,14 +84,8 @@ TRANSITIONS {
     opening -> opened  :: ENV(door_position) == 100;
     opening -> run_motor;
 
-    run_motor -> closing :: ENV(motor_speed) > 0;
-    run_motor -> opening :: ENV(motor_speed) < 0;
-}
-
-
-STATE_FN(init) {
-    // Pretend function that loads a saved state from disk
-    load_saved_state(&(ENV(saved_state)));
+    run_motor -> closing :: ENV(motor_speed) < 0;
+    run_motor -> opening :: ENV(motor_speed) > 0;
 }
 
 
@@ -124,5 +118,6 @@ STATE_FN(opening) {
 
 
 STATE_FN(run_motor) {
+    assert(ENV(motor_speed) != 0);
     ENV(door_position) += ENV(motor_speed);
 }

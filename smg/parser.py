@@ -10,7 +10,7 @@ class SMGParser(object):
             'prefix': None,
             'env': None,
             'transitions': [],
-            'state_fns': []
+            'state_fns': {}
         }
 
     def p_config(self, p):
@@ -20,7 +20,6 @@ class SMGParser(object):
                   | config transitions
                   | config env
                   | config state_fns '''
-        return 1
 
     def p_comments(self, p):
         '''comments : COMMENT
@@ -48,7 +47,7 @@ class SMGParser(object):
 
     def p_state_fn(self, p):
         '''state_fn : STATE_FN '(' NAME ')' CCODE'''
-        p[0] = p[3], p[5]
+        self.config['state_fns'][p[3]] = p[5]
 
     def p_transitions(self, p):
         '''transitions : TRANSITIONS transitions_body '}' '''

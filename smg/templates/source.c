@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <string.h>
-#include "header.h"
+#include "{{smg.prefix}}.h"
 
 {% if smg.include_logging %}
 #include <stdio.h>
@@ -22,19 +22,34 @@ typedef void (*{{smg.state_fn_type}})({{smg.state_machine_type}}*);
 /**
  * Transfer functions determine the next state that should occur
  **/
-typedef {{smg.state_type}} (*{{smg.trans_fn_type}})(const {{smg.state_machine_type}}*);
+typedef {{smg.state_type}} (*{{smg.trans_fn_type}})({{smg.state_machine_type}}*);
 
 
+/**
+ * Forward declaration of state functions
+ **/
 {% for state in smg.states %}
 static void {{state.state_fn}}({{smg.state_machine_type}}* machine);
 {% endfor %}
 
 
+/**
+ * Forward declaration of transfer functions
+ **/
 {% for state in smg.states %}
-static {{smg.state_type}} {{state.trans_fn}}(const {{smg.state_machine_type}}* machine);
+static {{smg.state_type}} {{state.trans_fn}}({{smg.state_machine_type}}* machine);
 {% endfor %}
 
 
+/**
+ * State function array.
+ * The index of the state function array corresponds to the enum
+ * value for the state.
+ * States can thus be accessed as follows:
+ * {{smg.state_type}} state;
+ * ...
+ * {{smg.statefns_array}}[state];
+ **/
 static const {{smg.state_fn_type}} {{smg.statefns_array}}[] = {
 {% for state in smg.states %}
     {{state.state_fn}},
@@ -42,6 +57,9 @@ static const {{smg.state_fn_type}} {{smg.statefns_array}}[] = {
 };
 
 
+/**
+ * Transfer function array.
+ **/
 static const {{smg.trans_fn_type}} {{smg.transfns_array}}[] = {
 {% for state in smg.states %}
     {{state.trans_fn}},
@@ -49,6 +67,10 @@ static const {{smg.trans_fn_type}} {{smg.transfns_array}}[] = {
 };
 
 
+/**
+ * Initialize the state machine
+ * @param m State machine
+ **/
 void {{smg.prefix}}_init({{smg.state_machine_type}}* m) {
     assert(m != NULL);
     memset(m, 0, sizeof({{smg.state_machine_type}}));
@@ -58,13 +80,22 @@ void {{smg.prefix}}_init({{smg.state_machine_type}}* m) {
 {% if smg.init_code %}
     {{smg.init_code}}
 {% endif %}
+{% if smg.include_logging and smg.include_string_funcs %}
+    printf("{{smg.prefix}}::info -- {{smg.prefix}} state machine initialized\n");
+    printf("{{smg.prefix}}::info -- initial state: %s\n",
+           {{smg.prefix}}_get_state_name(m->state));
+{% endif %}
 }
 
 
-void {{smg.prefix}}_next({{smg.state_machine_type}}* m) {
+/**
+ * Run the state machine one step
+ * @param m State machine
+ **/
+void {{smg.prefix}}_step({{smg.state_machine_type}}* m) {
     assert(m != NULL);
 
-    m->prev_state = machine->state;
+    m->prev_state = m->state;
     // Find the next state to transfer to
     m->state = {{smg.transfns_array}}[m->state](m);
 
@@ -86,13 +117,13 @@ void {{smg.prefix}}_next({{smg.state_machine_type}}* m) {
 
 {% if smg.include_logging and smg.include_string_funcs %}
     printf("{{smg.prefix}}::info -- transition: %s -> %s\n",
-        {{smg.prefix}}_get_state_name(m->prev_state),
-        {{smg.prefix}}_get_state_name(m->state));
+           {{smg.prefix}}_get_state_name(m->prev_state),
+           {{smg.prefix}}_get_state_name(m->state));
 {% endif %}
 }
 
 
-
+/* TODO: Change this to a preprocessor directive */
 {% if smg.include_string_funcs %}
 /**
  * Get a string representation of the state type
@@ -125,7 +156,7 @@ static void {{state.state_fn}}({{smg.state_machine_type}}* m) {
 /**
  * {{state.name}} transfer function
  **/
-static {{smg.state_type}} {{state.trans_fn}}(const {{smg.state_machine_type}}* m) {
+static {{smg.state_type}} {{state.trans_fn}}({{smg.state_machine_type}}* m) {
     assert(m != NULL);
 {% for trans in state.transitions %}
     if ({{trans.guards}}) {

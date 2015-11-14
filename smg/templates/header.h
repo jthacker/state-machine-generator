@@ -29,8 +29,8 @@ typedef bool {{smg.event_type}};
 typedef struct {
     {{smg.state_type}} state;
     {{smg.state_type}} prev_state;
-    uint32_t iteration_count;
-    uint32_t state_duration;
+    uint32_t iterations;
+    uint32_t duration;
     struct _env {
     {% if smg.state_machine_env_members %}
         {{smg.state_machine_env_members}}
@@ -52,7 +52,7 @@ void {{smg.prefix}}_init({{smg.state_machine_type}}* m);
  * Advance the state machine by one step,
  * updating the machine state.
  **/
-void {{smg.prefix}}_next({{smg.state_machine_type}}* m);
+void {{smg.prefix}}_step({{smg.state_machine_type}}* m);
 
 
 {% if smg.include_string_funcs %}
