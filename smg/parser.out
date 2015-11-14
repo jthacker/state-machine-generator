@@ -1,0 +1,487 @@
+Created by PLY version 3.8 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> config
+Rule 1     config -> empty
+Rule 2     config -> config comments
+Rule 3     config -> config declarations
+Rule 4     config -> config transitions
+Rule 5     config -> config env
+Rule 6     config -> config state_fns
+Rule 7     comments -> COMMENT
+Rule 8     comments -> comments COMMENT
+Rule 9     declarations -> declaration
+Rule 10    declarations -> declarations declaration
+Rule 11    declaration -> PREFIX ( NAME ) ;
+Rule 12    env -> DECLARE_ENV CCODE
+Rule 13    state_fns -> state_fns state_fn
+Rule 14    state_fns -> state_fn
+Rule 15    state_fn -> STATE_FN ( NAME ) CCODE
+Rule 16    transitions -> TRANSITIONS transitions_body }
+Rule 17    transitions_body -> transitions_body transition
+Rule 18    transitions_body -> transition
+Rule 19    transition -> NAME TRANSITION NAME GUARD CCODEGUARD ;
+Rule 20    transition -> NAME TRANSITION NAME ;
+Rule 21    empty -> <empty>
+
+Terminals, with rules where they appear
+
+(                    : 11 15
+)                    : 11 15
+;                    : 11 19 20
+CCODE                : 12 15
+CCODEGUARD           : 19
+COMMENT              : 7 8
+DECLARE_ENV          : 12
+GUARD                : 19
+NAME                 : 11 15 19 19 20 20
+PREFIX               : 11
+STATE_FN             : 15
+TRANSITION           : 19 20
+TRANSITIONS          : 16
+error                : 
+}                    : 16
+
+Nonterminals, with rules where they appear
+
+comments             : 2 8
+config               : 2 3 4 5 6 0
+declaration          : 9 10
+declarations         : 3 10
+empty                : 1
+env                  : 5
+state_fn             : 13 14
+state_fns            : 6 13
+transition           : 17 18
+transitions          : 4
+transitions_body     : 16 17
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . config
+    (1) config -> . empty
+    (2) config -> . config comments
+    (3) config -> . config declarations
+    (4) config -> . config transitions
+    (5) config -> . config env
+    (6) config -> . config state_fns
+    (21) empty -> .
+
+    COMMENT         reduce using rule 21 (empty -> .)
+    TRANSITIONS     reduce using rule 21 (empty -> .)
+    DECLARE_ENV     reduce using rule 21 (empty -> .)
+    PREFIX          reduce using rule 21 (empty -> .)
+    STATE_FN        reduce using rule 21 (empty -> .)
+    $end            reduce using rule 21 (empty -> .)
+
+    config                         shift and go to state 1
+    empty                          shift and go to state 2
+
+state 1
+
+    (0) S' -> config .
+    (2) config -> config . comments
+    (3) config -> config . declarations
+    (4) config -> config . transitions
+    (5) config -> config . env
+    (6) config -> config . state_fns
+    (7) comments -> . COMMENT
+    (8) comments -> . comments COMMENT
+    (9) declarations -> . declaration
+    (10) declarations -> . declarations declaration
+    (16) transitions -> . TRANSITIONS transitions_body }
+    (12) env -> . DECLARE_ENV CCODE
+    (13) state_fns -> . state_fns state_fn
+    (14) state_fns -> . state_fn
+    (11) declaration -> . PREFIX ( NAME ) ;
+    (15) state_fn -> . STATE_FN ( NAME ) CCODE
+
+    COMMENT         shift and go to state 3
+    TRANSITIONS     shift and go to state 4
+    DECLARE_ENV     shift and go to state 12
+    PREFIX          shift and go to state 7
+    STATE_FN        shift and go to state 8
+
+    declarations                   shift and go to state 5
+    comments                       shift and go to state 6
+    env                            shift and go to state 9
+    declaration                    shift and go to state 10
+    state_fns                      shift and go to state 11
+    transitions                    shift and go to state 13
+    state_fn                       shift and go to state 14
+
+state 2
+
+    (1) config -> empty .
+
+    COMMENT         reduce using rule 1 (config -> empty .)
+    TRANSITIONS     reduce using rule 1 (config -> empty .)
+    DECLARE_ENV     reduce using rule 1 (config -> empty .)
+    PREFIX          reduce using rule 1 (config -> empty .)
+    STATE_FN        reduce using rule 1 (config -> empty .)
+    $end            reduce using rule 1 (config -> empty .)
+
+
+state 3
+
+    (7) comments -> COMMENT .
+
+    COMMENT         reduce using rule 7 (comments -> COMMENT .)
+    TRANSITIONS     reduce using rule 7 (comments -> COMMENT .)
+    DECLARE_ENV     reduce using rule 7 (comments -> COMMENT .)
+    PREFIX          reduce using rule 7 (comments -> COMMENT .)
+    STATE_FN        reduce using rule 7 (comments -> COMMENT .)
+    $end            reduce using rule 7 (comments -> COMMENT .)
+
+
+state 4
+
+    (16) transitions -> TRANSITIONS . transitions_body }
+    (17) transitions_body -> . transitions_body transition
+    (18) transitions_body -> . transition
+    (19) transition -> . NAME TRANSITION NAME GUARD CCODEGUARD ;
+    (20) transition -> . NAME TRANSITION NAME ;
+
+    NAME            shift and go to state 16
+
+    transition                     shift and go to state 15
+    transitions_body               shift and go to state 17
+
+state 5
+
+    (3) config -> config declarations .
+    (10) declarations -> declarations . declaration
+    (11) declaration -> . PREFIX ( NAME ) ;
+
+  ! shift/reduce conflict for PREFIX resolved as shift
+    COMMENT         reduce using rule 3 (config -> config declarations .)
+    TRANSITIONS     reduce using rule 3 (config -> config declarations .)
+    DECLARE_ENV     reduce using rule 3 (config -> config declarations .)
+    STATE_FN        reduce using rule 3 (config -> config declarations .)
+    $end            reduce using rule 3 (config -> config declarations .)
+    PREFIX          shift and go to state 7
+
+  ! PREFIX          [ reduce using rule 3 (config -> config declarations .) ]
+
+    declaration                    shift and go to state 18
+
+state 6
+
+    (2) config -> config comments .
+    (8) comments -> comments . COMMENT
+
+  ! shift/reduce conflict for COMMENT resolved as shift
+    TRANSITIONS     reduce using rule 2 (config -> config comments .)
+    DECLARE_ENV     reduce using rule 2 (config -> config comments .)
+    PREFIX          reduce using rule 2 (config -> config comments .)
+    STATE_FN        reduce using rule 2 (config -> config comments .)
+    $end            reduce using rule 2 (config -> config comments .)
+    COMMENT         shift and go to state 19
+
+  ! COMMENT         [ reduce using rule 2 (config -> config comments .) ]
+
+
+state 7
+
+    (11) declaration -> PREFIX . ( NAME ) ;
+
+    (               shift and go to state 20
+
+
+state 8
+
+    (15) state_fn -> STATE_FN . ( NAME ) CCODE
+
+    (               shift and go to state 21
+
+
+state 9
+
+    (5) config -> config env .
+
+    COMMENT         reduce using rule 5 (config -> config env .)
+    TRANSITIONS     reduce using rule 5 (config -> config env .)
+    DECLARE_ENV     reduce using rule 5 (config -> config env .)
+    PREFIX          reduce using rule 5 (config -> config env .)
+    STATE_FN        reduce using rule 5 (config -> config env .)
+    $end            reduce using rule 5 (config -> config env .)
+
+
+state 10
+
+    (9) declarations -> declaration .
+
+    PREFIX          reduce using rule 9 (declarations -> declaration .)
+    COMMENT         reduce using rule 9 (declarations -> declaration .)
+    TRANSITIONS     reduce using rule 9 (declarations -> declaration .)
+    DECLARE_ENV     reduce using rule 9 (declarations -> declaration .)
+    STATE_FN        reduce using rule 9 (declarations -> declaration .)
+    $end            reduce using rule 9 (declarations -> declaration .)
+
+
+state 11
+
+    (6) config -> config state_fns .
+    (13) state_fns -> state_fns . state_fn
+    (15) state_fn -> . STATE_FN ( NAME ) CCODE
+
+  ! shift/reduce conflict for STATE_FN resolved as shift
+    COMMENT         reduce using rule 6 (config -> config state_fns .)
+    TRANSITIONS     reduce using rule 6 (config -> config state_fns .)
+    DECLARE_ENV     reduce using rule 6 (config -> config state_fns .)
+    PREFIX          reduce using rule 6 (config -> config state_fns .)
+    $end            reduce using rule 6 (config -> config state_fns .)
+    STATE_FN        shift and go to state 8
+
+  ! STATE_FN        [ reduce using rule 6 (config -> config state_fns .) ]
+
+    state_fn                       shift and go to state 22
+
+state 12
+
+    (12) env -> DECLARE_ENV . CCODE
+
+    CCODE           shift and go to state 23
+
+
+state 13
+
+    (4) config -> config transitions .
+
+    COMMENT         reduce using rule 4 (config -> config transitions .)
+    TRANSITIONS     reduce using rule 4 (config -> config transitions .)
+    DECLARE_ENV     reduce using rule 4 (config -> config transitions .)
+    PREFIX          reduce using rule 4 (config -> config transitions .)
+    STATE_FN        reduce using rule 4 (config -> config transitions .)
+    $end            reduce using rule 4 (config -> config transitions .)
+
+
+state 14
+
+    (14) state_fns -> state_fn .
+
+    STATE_FN        reduce using rule 14 (state_fns -> state_fn .)
+    COMMENT         reduce using rule 14 (state_fns -> state_fn .)
+    TRANSITIONS     reduce using rule 14 (state_fns -> state_fn .)
+    DECLARE_ENV     reduce using rule 14 (state_fns -> state_fn .)
+    PREFIX          reduce using rule 14 (state_fns -> state_fn .)
+    $end            reduce using rule 14 (state_fns -> state_fn .)
+
+
+state 15
+
+    (18) transitions_body -> transition .
+
+    }               reduce using rule 18 (transitions_body -> transition .)
+    NAME            reduce using rule 18 (transitions_body -> transition .)
+
+
+state 16
+
+    (19) transition -> NAME . TRANSITION NAME GUARD CCODEGUARD ;
+    (20) transition -> NAME . TRANSITION NAME ;
+
+    TRANSITION      shift and go to state 24
+
+
+state 17
+
+    (16) transitions -> TRANSITIONS transitions_body . }
+    (17) transitions_body -> transitions_body . transition
+    (19) transition -> . NAME TRANSITION NAME GUARD CCODEGUARD ;
+    (20) transition -> . NAME TRANSITION NAME ;
+
+    }               shift and go to state 26
+    NAME            shift and go to state 16
+
+    transition                     shift and go to state 25
+
+state 18
+
+    (10) declarations -> declarations declaration .
+
+    PREFIX          reduce using rule 10 (declarations -> declarations declaration .)
+    COMMENT         reduce using rule 10 (declarations -> declarations declaration .)
+    TRANSITIONS     reduce using rule 10 (declarations -> declarations declaration .)
+    DECLARE_ENV     reduce using rule 10 (declarations -> declarations declaration .)
+    STATE_FN        reduce using rule 10 (declarations -> declarations declaration .)
+    $end            reduce using rule 10 (declarations -> declarations declaration .)
+
+
+state 19
+
+    (8) comments -> comments COMMENT .
+
+    COMMENT         reduce using rule 8 (comments -> comments COMMENT .)
+    TRANSITIONS     reduce using rule 8 (comments -> comments COMMENT .)
+    DECLARE_ENV     reduce using rule 8 (comments -> comments COMMENT .)
+    PREFIX          reduce using rule 8 (comments -> comments COMMENT .)
+    STATE_FN        reduce using rule 8 (comments -> comments COMMENT .)
+    $end            reduce using rule 8 (comments -> comments COMMENT .)
+
+
+state 20
+
+    (11) declaration -> PREFIX ( . NAME ) ;
+
+    NAME            shift and go to state 27
+
+
+state 21
+
+    (15) state_fn -> STATE_FN ( . NAME ) CCODE
+
+    NAME            shift and go to state 28
+
+
+state 22
+
+    (13) state_fns -> state_fns state_fn .
+
+    STATE_FN        reduce using rule 13 (state_fns -> state_fns state_fn .)
+    COMMENT         reduce using rule 13 (state_fns -> state_fns state_fn .)
+    TRANSITIONS     reduce using rule 13 (state_fns -> state_fns state_fn .)
+    DECLARE_ENV     reduce using rule 13 (state_fns -> state_fns state_fn .)
+    PREFIX          reduce using rule 13 (state_fns -> state_fns state_fn .)
+    $end            reduce using rule 13 (state_fns -> state_fns state_fn .)
+
+
+state 23
+
+    (12) env -> DECLARE_ENV CCODE .
+
+    COMMENT         reduce using rule 12 (env -> DECLARE_ENV CCODE .)
+    TRANSITIONS     reduce using rule 12 (env -> DECLARE_ENV CCODE .)
+    DECLARE_ENV     reduce using rule 12 (env -> DECLARE_ENV CCODE .)
+    PREFIX          reduce using rule 12 (env -> DECLARE_ENV CCODE .)
+    STATE_FN        reduce using rule 12 (env -> DECLARE_ENV CCODE .)
+    $end            reduce using rule 12 (env -> DECLARE_ENV CCODE .)
+
+
+state 24
+
+    (19) transition -> NAME TRANSITION . NAME GUARD CCODEGUARD ;
+    (20) transition -> NAME TRANSITION . NAME ;
+
+    NAME            shift and go to state 29
+
+
+state 25
+
+    (17) transitions_body -> transitions_body transition .
+
+    }               reduce using rule 17 (transitions_body -> transitions_body transition .)
+    NAME            reduce using rule 17 (transitions_body -> transitions_body transition .)
+
+
+state 26
+
+    (16) transitions -> TRANSITIONS transitions_body } .
+
+    COMMENT         reduce using rule 16 (transitions -> TRANSITIONS transitions_body } .)
+    TRANSITIONS     reduce using rule 16 (transitions -> TRANSITIONS transitions_body } .)
+    DECLARE_ENV     reduce using rule 16 (transitions -> TRANSITIONS transitions_body } .)
+    PREFIX          reduce using rule 16 (transitions -> TRANSITIONS transitions_body } .)
+    STATE_FN        reduce using rule 16 (transitions -> TRANSITIONS transitions_body } .)
+    $end            reduce using rule 16 (transitions -> TRANSITIONS transitions_body } .)
+
+
+state 27
+
+    (11) declaration -> PREFIX ( NAME . ) ;
+
+    )               shift and go to state 30
+
+
+state 28
+
+    (15) state_fn -> STATE_FN ( NAME . ) CCODE
+
+    )               shift and go to state 31
+
+
+state 29
+
+    (19) transition -> NAME TRANSITION NAME . GUARD CCODEGUARD ;
+    (20) transition -> NAME TRANSITION NAME . ;
+
+    GUARD           shift and go to state 33
+    ;               shift and go to state 32
+
+
+state 30
+
+    (11) declaration -> PREFIX ( NAME ) . ;
+
+    ;               shift and go to state 34
+
+
+state 31
+
+    (15) state_fn -> STATE_FN ( NAME ) . CCODE
+
+    CCODE           shift and go to state 35
+
+
+state 32
+
+    (20) transition -> NAME TRANSITION NAME ; .
+
+    }               reduce using rule 20 (transition -> NAME TRANSITION NAME ; .)
+    NAME            reduce using rule 20 (transition -> NAME TRANSITION NAME ; .)
+
+
+state 33
+
+    (19) transition -> NAME TRANSITION NAME GUARD . CCODEGUARD ;
+
+    CCODEGUARD      shift and go to state 36
+
+
+state 34
+
+    (11) declaration -> PREFIX ( NAME ) ; .
+
+    PREFIX          reduce using rule 11 (declaration -> PREFIX ( NAME ) ; .)
+    COMMENT         reduce using rule 11 (declaration -> PREFIX ( NAME ) ; .)
+    TRANSITIONS     reduce using rule 11 (declaration -> PREFIX ( NAME ) ; .)
+    DECLARE_ENV     reduce using rule 11 (declaration -> PREFIX ( NAME ) ; .)
+    STATE_FN        reduce using rule 11 (declaration -> PREFIX ( NAME ) ; .)
+    $end            reduce using rule 11 (declaration -> PREFIX ( NAME ) ; .)
+
+
+state 35
+
+    (15) state_fn -> STATE_FN ( NAME ) CCODE .
+
+    STATE_FN        reduce using rule 15 (state_fn -> STATE_FN ( NAME ) CCODE .)
+    COMMENT         reduce using rule 15 (state_fn -> STATE_FN ( NAME ) CCODE .)
+    TRANSITIONS     reduce using rule 15 (state_fn -> STATE_FN ( NAME ) CCODE .)
+    DECLARE_ENV     reduce using rule 15 (state_fn -> STATE_FN ( NAME ) CCODE .)
+    PREFIX          reduce using rule 15 (state_fn -> STATE_FN ( NAME ) CCODE .)
+    $end            reduce using rule 15 (state_fn -> STATE_FN ( NAME ) CCODE .)
+
+
+state 36
+
+    (19) transition -> NAME TRANSITION NAME GUARD CCODEGUARD . ;
+
+    ;               shift and go to state 37
+
+
+state 37
+
+    (19) transition -> NAME TRANSITION NAME GUARD CCODEGUARD ; .
+
+    }               reduce using rule 19 (transition -> NAME TRANSITION NAME GUARD CCODEGUARD ; .)
+    NAME            reduce using rule 19 (transition -> NAME TRANSITION NAME GUARD CCODEGUARD ; .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for PREFIX in state 5 resolved as shift
+WARNING: shift/reduce conflict for COMMENT in state 6 resolved as shift
+WARNING: shift/reduce conflict for STATE_FN in state 11 resolved as shift

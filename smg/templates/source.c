@@ -129,6 +129,9 @@ static {{smg.state_type}} {{state.trans_fn}}(const {{smg.state_machine_type}}* m
     assert(m != NULL);
 {% for trans in state.transitions %}
     if ({{trans.guards}}) {
+    {% for event in trans.handled_events %}
+        {{smg.env_name}}.{{event}} = false;
+    {% endfor %}
         return {{trans.to_state.enum}};
     }
 {% endfor %}

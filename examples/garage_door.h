@@ -1,91 +1,128 @@
 /**
- * Generate a state machine for a garage door
- *
- * [[[smg]]]
- * prefix: smg_garage
- *
- * states:
- *  init:
- *      opened: ENV.saved_state == STATE(opened) || ENV.saved_state == STATE(opening)
- *      closed: ENV.saved_state == STATE(closed) || ENV.saved_state == STATE(closing)
- *
- *  closed:
- *      opening: ENV.button_pressed
- *
- *  closing:
- *      opening: ENV.button_pressed
- *      closed: ENV.door_position == 0
- *
- *  opened:
- *      closing: ENV.button_pressed
- *
- *  opening:
- *      closing: ENV.button_pressed
- *      opened: ENV.door_position == 100
- *
- *  run_motor:
- *      closing: ENV.motor_speed > 0
- *      opening: ENV.motor_speed < 0
- *
- * [[[end]]]
- *
- * An event is a specially treated bool value.
- * If an event is set in a state function, then it will be once it has been handled.
- * In the example below, the button_pressed event is used to signal that
- * the user would like to toggle the state of the garage door.
- * This event is signaled externally.
- *
- * The light is on whenever the door is moving.
- *
- * The following keywords are treated specially:
+ * Garage Door state machine
  **/
 
+/**
+ * Setting a prefix allows the generated state machine to
+ * be properly namespaced
+ **/
+PREFIX(smg_garage);
+
+
+/**
+ * ENV is used to define members in the environment struct
+ * of the state machine.
+ **/
 DECLARE_ENV {
-    bool light_on;
-    int door_position;
-    int motor_speed;
+    /**
+     * Declare button_pressed as an event
+     **/
     DECLARE_EVENT(button_pressed);
+
+    /**
+     * Declare a member in ENV named saved_state
+     * The type is defined as the local enum containing
+     * all the states of the state machine
+     **/
     DECLARE_STATE(saved_state);
+
+    /**
+     * Light should be turned on whenever the motor is running
+     **/
+    bool light_on;
+
+    /**
+     * Position of door from 0 to 100
+     * 0 is closed
+     * 100 is fully open
+     **/
+    int door_position;
+
+    /**
+     * Motor speed
+     * values < 0 will decrease the door_position
+     * values > 0 will increase the door_position
+     **/
+    int motor_speed;
+}
+
+
+/**
+ * Describe each transition that a state can make.
+ *
+ * Syntax:
+ * <from_state> -> <to_state> :: <guards>;
+ *
+ * A transition will take place if the guards block evaluates to
+ * true. Transitions are evaluated in order so the first one that
+ * is true will be the state returned.
+ *
+ * If none of the guards evaluate to true, then the error state is
+ * entered (default action is to halt).
+ * To avoid this, a state that wishes to remain active should transition
+ * back to itself with no guards
+ **/
+TRANSITIONS {
+    init -> opened :: ENV(saved_state) == STATE(opened);
+    init -> opened :: ENV(saved_state) == STATE(opening);
+
+    init -> closed :: ENV(saved_state) == STATE(closed);
+    init -> closed :: ENV(saved_state) == STATE(closing);
+
+    closed -> opening :: ACCEPT(button_pressed);
+    // No guards indicates this is a default transition
+    closed -> closed;
+
+    closing -> opening :: ACCEPT(button_pressed);
+    closing -> closed  :: ENV(door_position) == 0;
+    closing -> run_motor;
+
+    opened -> closing :: ACCEPT(button_pressed);
+    opened -> opened;
+
+    opening -> closing :: ACCEPT(button_pressed);
+    opening -> opened  :: ENV(door_position) == 100;
+    opening -> run_motor;
+
+    run_motor -> closing :: ENV(motor_speed) > 0;
+    run_motor -> opening :: ENV(motor_speed) < 0;
 }
 
 
 STATE_FN(init) {
-    // Load a saved state from disk
-    load_saved_state(&(m->env.saved_state));
+    // Pretend function that loads a saved state from disk
+    load_saved_state(&(ENV(saved_state)));
 }
 
 
 STATE_FN(closed) {
-    m->env.light_on = false;
-    m->env.motor_speed = 0;
-    m->env.saved_state = STATE(closed);
+    ENV(light_on) = false;
+    ENV(motor_speed) = 0;
+    ENV(saved_state) = STATE(closed);
 }
 
 
 STATE_FN(closing) {
-    m->env.button_pressed.handled = true;
-    m->env.light_on = true;
-    m->env.motor_speed = -1;
-    m->env.saved_state = STATE(closing);
+    ENV(light_on) = true;
+    ENV(motor_speed) = -1;
+    ENV(saved_state) = STATE(closing);
 }
 
 
 STATE_FN(opened) {
-    m->env.button_pressed.handled = true;
-    m->env.light_on = false;
-    m->env.motor_speed = 0;
-    m->env.saved_state = STATE(opened);
+    ENV(light_on) = false;
+    ENV(motor_speed) = 0;
+    ENV(saved_state) = STATE(opened);
 }
 
 
 STATE_FN(opening) {
-    m->env.button_pressed.handled = true;
-    m->env.light_on = true;
-    m->env.motor_speed = 1;
-    m->env.saved_state = STATE(opening);
+    ENV(light_on) = true;
+    ENV(motor_speed) = 1;
+    ENV(saved_state) = STATE(opening);
 }
 
 
 STATE_FN(run_motor) {
-    m->env.door_position += m->env.motor_speed;
+    ENV(door_position) += ENV(motor_speed);
 }
