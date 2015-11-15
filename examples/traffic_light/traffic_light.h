@@ -23,13 +23,13 @@ DECLARE_ENV {
 
 
 TRANSITIONS {
-    red -> green :: ENV(car_waiting) && m->duration > 3;
+    red -> green :: ENV(car_waiting) && m->duration > 30;
     red -> red;
 
-    yellow -> red :: m->duration > 3;
+    yellow -> red :: m->duration > 5;
     yellow -> yellow;
 
-    green -> yellow :: m->duration > 10;
+    green -> yellow :: m->duration > 30;
     green -> green;
 }
 

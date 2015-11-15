@@ -104,9 +104,11 @@ void {{smg.prefix}}_step({{smg.state_machine_type}}* m) {
         m->duration = 0;
         // Execute the new state
         {{smg.statefns_array}}[m->state](m);
+
     {% if smg.include_logging and smg.include_string_funcs %}
-        printf("{{smg.prefix}}::info -- executing state function %s\n",
-                {{smg.prefix}}_get_state_name(m->state));
+        printf("{{smg.prefix}}::info -- transition: %s -> %s\n",
+               {{smg.prefix}}_get_state_name(m->prev_state),
+               {{smg.prefix}}_get_state_name(m->state));
     {% endif %}
 
     } else {
@@ -114,12 +116,6 @@ void {{smg.prefix}}_step({{smg.state_machine_type}}* m) {
     }
 
     m->iterations += 1;
-
-{% if smg.include_logging and smg.include_string_funcs %}
-    printf("{{smg.prefix}}::info -- transition: %s -> %s\n",
-           {{smg.prefix}}_get_state_name(m->prev_state),
-           {{smg.prefix}}_get_state_name(m->state));
-{% endif %}
 }
 
 
