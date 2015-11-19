@@ -14,60 +14,6 @@
 
 
 /**
- * State functions execute when a state is first entered
- **/
-typedef void (*{{smg.state_fn_type}})({{smg.state_machine_type}}*);
-
-
-/**
- * Transfer functions determine the next state that should occur
- **/
-typedef {{smg.state_type}} (*{{smg.trans_fn_type}})({{smg.state_machine_type}}*);
-
-
-/**
- * Forward declaration of state functions
- **/
-{% for state in smg.states %}
-static void {{state.state_fn}}({{smg.state_machine_type}}* machine);
-{% endfor %}
-
-
-/**
- * Forward declaration of transfer functions
- **/
-{% for state in smg.states %}
-static {{smg.state_type}} {{state.trans_fn}}({{smg.state_machine_type}}* machine);
-{% endfor %}
-
-
-/**
- * State function array.
- * The index of the state function array corresponds to the enum
- * value for the state.
- * States can thus be accessed as follows:
- * {{smg.state_type}} state;
- * ...
- * {{smg.statefns_array}}[state];
- **/
-static const {{smg.state_fn_type}} {{smg.statefns_array}}[] = {
-{% for state in smg.states %}
-    {{state.state_fn}},
-{% endfor %}
-};
-
-
-/**
- * Transfer function array.
- **/
-static const {{smg.trans_fn_type}} {{smg.transfns_array}}[] = {
-{% for state in smg.states %}
-    {{state.trans_fn}},
-{% endfor %}
-};
-
-
-/**
  * Initialize the state machine
  * @param m State machine
  **/
@@ -97,13 +43,45 @@ void {{smg.prefix}}_step({{smg.state_machine_type}}* m) {
 
     m->prev_state = m->state;
     // Find the next state to transfer to
-    m->state = {{smg.transfns_array}}[m->state](m);
+    switch (m->state) {
+    {% for state in smg.states %}
+        case {{state.enum}}:
+        {% for trans in state.transitions %}
+            if ({{trans.guards}}) {
+            {% for event in trans.handled_events %}
+                {{smg.env_name}}.{{event}} = false;
+            {% endfor %}
+                m->state = {{trans.to_state.enum}};
+                break;
+            }
+        {% endfor %}
+        {% if state.default_transition %}
+            m->state = {{state.default_transition.to_state.enum}};
+            break;
+        {% else %}
+            m->state = {{smg.error_state.enum}};
+            break;
+        {% endif %}
+    {% endfor %}
+        default:
+            assert(false); // This state should never be reached
+    }
 
     // Only execute the state on transitions
     if (m->state != m->prev_state || m->iterations == 0) {
         m->duration = 0;
         // Execute the new state
-        {{smg.statefns_array}}[m->state](m);
+        switch (m->state) {
+        {% for state in smg.states %}
+            case {{state.enum}}:
+            {% if state.state_code %}
+                {{state.state_code}}
+            {% endif %}
+                break;
+        {% endfor %}
+            default:
+                assert(false); // This state should never be reached
+        }
 
     {% if smg.include_logging and smg.include_string_funcs %}
         printf("{{smg.prefix}}::info -- transition: %s -> %s\n",
@@ -119,8 +97,8 @@ void {{smg.prefix}}_step({{smg.state_machine_type}}* m) {
 }
 
 
-/* TODO: Change this to a preprocessor directive */
 {% if smg.include_string_funcs %}
+/* TODO: Change this to a preprocessor directive */
 /**
  * Get a string representation of the state type
  * @param state state to get name for
@@ -137,37 +115,3 @@ const char* {{smg.prefix}}_get_state_name(const {{smg.state_type}} state) {
     assert(false);
 }
 {% endif %}
-
-
-{% for state in smg.states %}
-/**
- * {{state.name}} state function
- **/
-static void {{state.state_fn}}({{smg.state_machine_type}}* m) {
-    assert(m != NULL);
-{% if state.state_code %}
-    {{state.state_code}}
-{% endif %}
-}
-/**
- * {{state.name}} transfer function
- **/
-static {{smg.state_type}} {{state.trans_fn}}({{smg.state_machine_type}}* m) {
-    assert(m != NULL);
-{% for trans in state.transitions %}
-    if ({{trans.guards}}) {
-    {% for event in trans.handled_events %}
-        {{smg.env_name}}.{{event}} = false;
-    {% endfor %}
-        return {{trans.to_state.enum}};
-    }
-{% endfor %}
-{% if state.default_transition %}
-    return {{state.default_transition.to_state.enum}};
-{% else %}
-    return {{smg.error_state.enum}};
-{% endif %}
-}
-
-
-{% endfor %}

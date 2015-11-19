@@ -43,10 +43,7 @@ class SMGNamer(object):
         self.env_name = 'm->env'
         self.state_machine_type = self('state_machine_t')
         self.state_type = self('state_t')
-        self.trans_fn_type = self('trans_fn_t')
-        self.state_fn_type = self('state_fn_t')
-        self.transfns_array = self('trans_fns')
-        self.statefns_array = self('state_fns')
+        self.step_callback_type = self('step_callback_t')
         self.event_type = self('event_t')
 
     def __call__(self, *args):
@@ -121,11 +118,8 @@ class SMGConfig(object):
         self.env_name = namer.env_name
         self.state_machine_type = namer.state_machine_type
         self.state_type = namer.state_type
-        self.trans_fn_type = namer.trans_fn_type
-        self.state_fn_type = namer.state_fn_type
-        self.transfns_array = namer.transfns_array
-        self.statefns_array = namer.statefns_array
         self.event_type = namer.event_type
+        self.step_callback_type = namer.step_callback_type
         self.include_string_funcs = True
         self.include_logging = True
         self.init_code = None

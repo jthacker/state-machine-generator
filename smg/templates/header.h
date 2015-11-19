@@ -40,6 +40,12 @@ typedef struct {
 
 
 /**
+ * Called everytime the state machine transitions to a new state
+ **/
+typedef void (*{{smg.step_callback_type}})({{smg.state_machine_type}}*);
+
+
+/**
  * Initialize a {{smg.state_machine_type}}
  *
  * @param machine initialize all members
