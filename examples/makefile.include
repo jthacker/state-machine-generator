@@ -1,0 +1,24 @@
+CC = gcc
+CFLAGS = -Wall
+SMG_CONFIG_FILE ?= config.h
+OBJ = $(SMG_OUTPUT_FILE:.c=.o) main.o
+
+.PHONY: all clean generate run
+
+all: main
+
+$(SMG_OUTPUT_FILE):
+	smg $(SMG_CONFIG_FILE) ./
+
+%.o : %.c
+	@echo compiling: $<
+	@$(CC) $(CFLAGS) -g -c $< -o $@
+
+main: $(OBJ)
+	$(CC) $(CFLAGS) $^ -o $@
+
+run: main
+	./main
+
+clean:
+	rm -f $(OBJ) smg_* main
