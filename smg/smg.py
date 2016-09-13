@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from collections import namedtuple
 from itertools import chain
 from jinja2 import Environment, PackageLoader
